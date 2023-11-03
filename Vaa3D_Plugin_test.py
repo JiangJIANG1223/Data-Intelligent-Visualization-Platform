@@ -1,38 +1,5 @@
 import paramiko
 
-# def test_remote_copy(hostname, port, username, password, source_path, dest_path):
-#     # 创建SSH客户端
-#     client = paramiko.SSHClient()
-#     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # 自动添加主机密钥
-#     client.connect(hostname, port, username, password)
-
-#     # 构建cp命令
-#     copy_cmd = f"cp {source_path} {dest_path}"
-
-#     # 执行cp命令
-#     stdin, stdout, stderr = client.exec_command(copy_cmd)
-
-#     # 检查是否有错误输出
-#     error = stderr.read().decode().strip()
-#     if error:
-#         print(f"Error copying file: {error}")
-#     else:
-#         print(f"File copied successfully from {source_path} to {dest_path}")
-
-#     # 关闭连接
-#     client.close()
-
-# # 使用您的服务器详细信息调用函数
-# test_remote_copy(
-#     hostname = '114.117.165.134'
-#     port = 22        # 默认SSH端口是22
-#     username = 'shengdianjiang'
-#     password = 'jiang@tcloud'
-
-#     source_path='/TeraConvertedBrain/data/191797/brainID_191797_X_2535.31/brainID_191797_X_2535.31_Y_12442.9_Z_2675.06.v3dpbd/brainID_191797_X_2535.31_Y_12442.9_Z_2675.06.v3dpbd.ano.eswc to /tmp/eswc_temp_folder\brainID_191797_X_2535.31_Y_12442.9_Z_2675.06.v3dpbd.ano.eswc',
-#     dest_path='/path/to/destination/folder/'
-# )
-
 # 设置服务器的信息
 hostname = '114.117.165.134'
 port = 22        # 默认SSH端口是22
