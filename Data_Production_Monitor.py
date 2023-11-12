@@ -1,8 +1,8 @@
 import sys
-from PyQt5 import QtGui
+# from PyQt5 import QtGui
 import pandas as pd
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, 
-                             QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QScrollArea)
+                             QWidget, QTableWidget, QTableWidgetItem, QHeaderView)
 from PyQt5.QtGui import QPainter, QFont
 from PyQt5.QtCore import Qt
 from PyQt5.QtChart import QPieSeries, QChart, QChartView, QBarSet, QBarSeries, QBarCategoryAxis, QValueAxis
@@ -112,10 +112,10 @@ class MainWindow(QMainWindow):
         pie_chart1_view = self.create_pie_chart1()
         h_layout_1.addWidget(pie_chart1_view)
 
-        table0 = self.create_neurons_table()
+        table0 = self.create_neurons24h_table()
         h_layout_1.addWidget(table0)
 
-        # 读取GF.csv和3D预览窗口的水平布局
+        # 读取GF.csv（表格1）和3D预览窗口的水平布局
         title_label_2 = QLabel("Preview of Reconstructed Neurons")
         title_label_2.setFont(self.boldFont)
         title_label_2.setAlignment(Qt.AlignCenter)
@@ -124,20 +124,26 @@ class MainWindow(QMainWindow):
         h_layout_2 = QHBoxLayout()                     
         main_layout.addLayout(h_layout_2)
 
-        table1 = self.create_df_table()
+        table1 = self.create_reconstructed_table()
         h_layout_2.addWidget(table1)
 
         self.plotter = QtInteractor(self)
         h_layout_2.addWidget(self.plotter)
         
-        # 添加柱状图
+        # 柱状图与表格2的水平布局
         title_label_3 = QLabel("Neuron Reconstruction in 2023")
         title_label_3.setFont(self.boldFont)
         title_label_3.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(title_label_3)
 
+        h_layout_3 = QHBoxLayout()                     
+        main_layout.addLayout(h_layout_3)
+
         bar_chart_view = self.create_bar_chart()
-        main_layout.addWidget(bar_chart_view)
+        h_layout_3.addWidget(bar_chart_view)
+
+        table2 = self.create_qc_table()
+        h_layout_3.addWidget(table2)
 
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
@@ -228,7 +234,7 @@ class MainWindow(QMainWindow):
         chart_view.setRenderHint(QPainter.Antialiasing)
         return chart_view
     
-    def create_neurons_table(self):
+    def create_neurons24h_table(self):
         # 24小时内重建的神经元信息表格
         table0 = QTableWidget(7, 3)
         table0.setHorizontalHeaderLabels(["Reconstructed within 24 hours", "Reconstructor ID", "Reviewer ID"])
@@ -252,7 +258,7 @@ class MainWindow(QMainWindow):
         
         return table0
 
-    def create_df_table(self):
+    def create_reconstructed_table(self):
         # 读取GF.csv文件并展示
         df = pd.read_csv('GF_test.csv')
         # ['Name', 'Nodes', 'SomaSurface', 'Stems',' Bifurcations', 'Branches', 'Tips',	'OverallWidth', 'OverallHeight','OverallDepth', 
@@ -273,6 +279,30 @@ class MainWindow(QMainWindow):
         self.table1.itemDoubleClicked.connect(self.loadSWC)  # 双击事件
 
         return self.table1
+    
+    def create_qc_table(self):
+        # 读取report_data_forBBP_1891.csv文件并展示
+        df = pd.read_csv('report_data_forBBP_1891.csv')
+        # columns_to_display = ['swc_name', 'dangling_branch', 'root_node_jump', 'z_jumps', 'narrow_start', 
+        #                       'fat_ends', 'has_all_nonzero_segment_lengths', 'narrow_neurite_section', 
+        #                       'single_child', 'multifurcation', 'number_of_dendritic_trees_steaming_from_the_soma',
+        #                       'number_of_axons', 'max_branch_order', 'total_section_length', 'max_section_length']
+        columns_to_display = ['swc_name', 'root_node_jump', 'z_jumps', 'fat_ends',   
+                              'number_of_dendritic_trees_steaming_from_the_soma',
+                              'number_of_axons', 'max_branch_order', 
+                              'total_section_length', 'max_section_length']
+        df = df[columns_to_display]
+
+        self.table2 = QTableWidget(df.shape[0], df.shape[1])
+        self.table2.setHorizontalHeaderLabels(df.columns)
+        self.table2.verticalHeader().setVisible(False)
+        self.table2.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # self.table1.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents) # 'name'一列显示完整
+        for row in range(df.shape[0]):
+            for col in range(df.shape[1]):
+                self.table2.setItem(row, col, QTableWidgetItem(str(df.iloc[row,col])))
+
+        return self.table2    
 
     def loadSWC(self, item):
         print("loadSWC function called.")
